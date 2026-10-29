@@ -1,52 +1,7 @@
+-- Seed data for a database created with schema.sql. Run once after schema.sql.
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE IF NOT EXISTS Departments (
-    department_id INTEGER PRIMARY KEY,
-    department_name TEXT NOT NULL UNIQUE,
-    location TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS Employees (
-    employee_id INTEGER PRIMARY KEY,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    job_title TEXT NOT NULL,
-    hire_date TEXT NOT NULL,
-    salary NUMERIC NOT NULL CHECK (salary >= 0),
-    department_id INTEGER NOT NULL,
-    FOREIGN KEY (department_id) REFERENCES Departments (department_id)
-);
-
-CREATE TABLE IF NOT EXISTS Projects (
-    project_id INTEGER PRIMARY KEY,
-    project_name TEXT NOT NULL,
-    description TEXT,
-    start_date TEXT NOT NULL,
-    end_date TEXT,
-    status TEXT NOT NULL CHECK (status IN ('Planned', 'Active', 'Completed', 'On Hold')),
-    department_id INTEGER NOT NULL,
-    CHECK (end_date IS NULL OR end_date >= start_date),
-    FOREIGN KEY (department_id) REFERENCES Departments (department_id)
-);
-
-CREATE TABLE IF NOT EXISTS Employee_Projects (
-    employee_id INTEGER NOT NULL,
-    project_id INTEGER NOT NULL,
-    project_role TEXT NOT NULL,
-    assigned_on TEXT NOT NULL,
-    allocation_percent INTEGER NOT NULL CHECK (allocation_percent BETWEEN 1 AND 100),
-    PRIMARY KEY (employee_id, project_id),
-    FOREIGN KEY (employee_id) REFERENCES Employees (employee_id) ON DELETE CASCADE,
-    FOREIGN KEY (project_id) REFERENCES Projects (project_id) ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_employees_department_id
-    ON Employees (department_id);
-CREATE INDEX IF NOT EXISTS idx_projects_department_id
-    ON Projects (department_id);
-CREATE INDEX IF NOT EXISTS idx_employee_projects_project_id
-    ON Employee_Projects (project_id);
+BEGIN IMMEDIATE;
 
 INSERT INTO Departments (department_id, department_name, location) VALUES
     (1, 'Engineering', 'Bengaluru'),
@@ -124,3 +79,5 @@ INSERT INTO Employee_Projects (
     (19, 9, 'Operations Coordinator', '2025-01-22', 60),
     (20, 10, 'Process Improvement Lead', '2025-03-10', 30),
     (18, 10, 'Business Analyst', '2025-03-10', 20);
+
+COMMIT;
