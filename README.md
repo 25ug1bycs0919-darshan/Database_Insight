@@ -2,6 +2,8 @@
 
 This example database tracks departments, employees, projects, and employee assignments. The schema and sample data use SQLite-compatible SQL. It is designed as a small, normalized operational schema: department attributes live in `Departments`, and the many-to-many employee/project relationship lives in `Employee_Projects`.
 
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the proposed InsightSQL architecture, component and data-flow diagrams, security, logging, exception handling, folder layout, and testing strategy.
+
 ## ER diagram
 
 ```mermaid
