@@ -63,3 +63,9 @@ The SQL is split into two files:
 2. Run [`sample_data.sql`](./sample_data.sql) once afterward to insert **5 departments, 20 employees, 10 projects**, and 28 employee-project assignments.
 
 Both scripts use SQLite-compatible SQL and transactions. The sample data script depends on the schema and is intended to be run once per newly initialized database; rerunning it will produce unique-key errors rather than duplicate or overwrite records.
+
+## Read-only Python app
+
+Run `python app.py` from this folder to browse tables and rows in `employee_management.db`. The app opens the database with SQLite read-only mode, enables `query_only`, and denies database-writing operations. It does not execute either SQL setup script. To browse a different existing database, use `python app.py --database path\to\database.db`.
+
+`schema_copy.sql` and `sample_data_copy.sql` are separate copies of the schema and sample data scripts. They are provided as requested; the read-only app does not use or execute them.
