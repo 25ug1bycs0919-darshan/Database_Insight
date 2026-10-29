@@ -66,8 +66,54 @@ The SQL is split into two files:
 
 Both scripts use SQLite-compatible SQL and transactions. The sample data script depends on the schema and is intended to be run once per newly initialized database; rerunning it will produce unique-key errors rather than duplicate or overwrite records.
 
-## Read-only Python app
+## InsightSQL application
 
-Run `python app.py` from this folder to browse tables and rows in `employee_management.db`. The app opens the database with SQLite read-only mode, enables `query_only`, and denies database-writing operations. It does not execute either SQL setup script. To browse a different existing database, use `python app.py --database path\to\database.db`.
+InsightSQL is a Streamlit application that converts natural-language questions into SQLite `SELECT` queries, shows the SQL for review, executes validated queries against the database, displays results, and keeps a per-session query history.
+
+### Setup and run
+
+1. Install Python 3.10 or later.
+2. From this folder, create and activate a virtual environment:
+
+   ```powershell
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   ```
+
+3. Install application and test dependencies:
+
+   ```powershell
+   python -m pip install -e ".[dev]"
+   ```
+
+4. In VS Code, run **Python: Select Interpreter** from the Command Palette and select `.venv\Scripts\python.exe`. The workspace default points to this environment; if VS Code already had another interpreter selected, change it once manually.
+
+5. Optionally configure an OpenAI API key in the current PowerShell session:
+
+   ```powershell
+   $env:OPENAI_API_KEY = "your-api-key"
+   ```
+
+6. Start the application:
+
+   ```powershell
+   streamlit run app.py
+   ```
+
+Alternatively, start the app without an environment key and enter the key in the password-masked sidebar field. It is used for the current Streamlit session and is not written to the database or logs. Set `INSIGHTSQL_DATABASE` to use a different existing SQLite file, and `OPENAI_MODEL` to select another supported model. The default database is `employee_management.db` in this folder.
+
+### Query safety and history
+
+The app only accepts one `SELECT` statement, restricts database reads to the four employee-management tables, and permits only an explicit set of safe SQLite functions. SQLite is opened in read-only mode with an authorizer and query-only mode; execution has a five-second limit and results are capped at 500 rows. SQL is displayed and editable before execution. Query history is stored in Streamlit session state and is not persisted to the database.
+
+The model generates a SQL candidate but does not execute it or receive database rows. The query goes through local validation and SQLite authorization before execution. Set `OPENAI_API_KEY` outside source control; never put a real key in `.env.example`.
+
+### Tests
+
+Run the test suite with:
+
+```powershell
+python -m pytest -q
+```
 
 `schema_copy.sql` and `sample_data_copy.sql` are separate copies of the schema and sample data scripts. They are provided as requested; the read-only app does not use or execute them.
